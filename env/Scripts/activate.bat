@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=E:\programing\python\django\MinecraftWeb\MinecraftServer\env
+set VIRTUAL_ENV=E:\programing\python\django\MinecraftWeb\VoteWeb\env
 
 if not defined PROMPT set PROMPT=$P$G
 
