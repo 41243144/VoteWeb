@@ -1,0 +1,72 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}{{ slug }}{% endblock title %}
+{% block content %}
+
+<div class="main-wrapper ">
+<section class="page-title bg-1">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white">文章內容</span>
+          <h1 class="text-capitalize mb-4 text-lg">{{ slug }}</h1>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="index.html" class="text-white">首頁</a></li>
+            <li class="list-inline-item"><span class="text-white">/</span></li>
+            <li class="list-inline-item"><a href="{% url 'articles_list' %}" class="text-white-50">所有文章</a></li>
+            <li class="list-inline-item"><span class="text-white">/</span></li>
+            <li class="list-inline-item"><a href="{% url 'article' slug=slug %}" class="text-white-50">{{ slug }}</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section blog-wrap bg-gray">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+	<div class="col-lg-12 mb-5">
+		<div class="single-blog-item">
+			<!-- 動態生成-->
+		</div>
+	</div>
+
+
+	<div class="col-lg-12 mb-5">
+		<div class="posts-nav bg-white p-5 d-lg-flex d-md-flex justify-content-between ">
+			<!-- 動態生成-->
+		</div>
+	</div>
+
+	<div class="col-lg-12 mb-5">
+		<div class="comment-area card border-0 p-5">
+			<!-- 動態生成-->
+		</div>
+	</div>
+
+	<div class="col-lg-12" id="add-comment">
+		<form class="contact-form bg-white rounded p-5" id="comment-form">
+			<h4 class="mb-4">新增留言</h4>
+		
+			<textarea class="form-control mb-3" name="comment" id="comment" cols="30" rows="5" placeholder="Comment"></textarea>
+		
+			<input class="btn btn-main btn-round-full" type="submit" name="submit-contact" id="submit_contact" value="Submit Message">
+		</form>
+	</div>
+</div>
+</div>
+</section>
+<div id="slug-container" data-slug="{{ slug }}" style="display: none;"></div>
+
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'js/article_content.js' %}"></script>
+{% endblock script %}

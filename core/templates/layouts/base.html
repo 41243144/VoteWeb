@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html lang="zh-hans">
+    <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% if basic_info and basic_info.description %}
+      <meta name="description" content="{{ basic_info.description }}">
+    {% endif %}
+
+    <meta name="keywords" content="HTML, CSS, JavaScript, Python, Django, Bootstrap, Web Development, Web Design, Web, Development, Design">
+    
+    <meta name="author" content="themefisher.com wenwen">
+
+    {% comment %} 待辦:取得使用者名稱 {% endcomment %}
+    <title>
+      {% if basic_info and basic_info.title %}
+        {{ basic_info.title }} | 
+      {% endif %}
+
+      {% block title %}{{ basic_info.title }}{% endblock title %}
+    </title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- bootstrap.min css -->
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.min.css' %}">
+    <!-- Icon Font Css -->
+    <link rel="stylesheet" href="{% static 'plugins/themify/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome/css/all.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/magnific-popup/dist/magnific-popup.css' %}">
+    <!-- Owl Carousel CSS -->
+    <link rel="stylesheet" href="{% static 'plugins/slick-carousel/slick/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/slick-carousel/slick/slick-theme.css' %}">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="{% static 'plugins/sweetAlert2/sweetalert2.min.css' %}">
+
+    <!-- tagify CSS -->
+    <link rel="stylesheet" href="{% static 'plugins/tagify/tagify.css' %}">
+
+    <!-- Favicon -->
+    {% if basic_info.icon %}
+      <link rel="shortcut icon" href="{{ basic_info.icon.url }}" type="image/x-icon">
+    {% endif %}
+
+    <!--Font Style-->
+    <style>
+      body {
+          font-family: 'Noto Sans TC', sans-serif;
+      }
+    </style>
+    </head>
+    <body>
+		<!-- Header Start -->
+		  {% include "includes/header.html" %}
+		<!-- Header Close -->
+    <!-- Main content Start -->
+      {% block content %}{% endblock content %}
+    <!-- Main content Close -->
+    <!-- Footer Start -->
+      {% include "includes/footer.html" %}
+    <!-- Footer Close -->
+    <!-- Java Script Start -->
+      {% include "includes/script.html" %}
+    <!-- Java Script Close -->
+      {% block script %}{% endblock script %}
+</body>
+</html>

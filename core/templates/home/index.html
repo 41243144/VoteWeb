@@ -1,0 +1,155 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}首頁{% endblock title %}
+{% block content %}
+<div class="main-wrapper ">
+
+<!-- Section About Start -->
+
+<section class="section about position-relative">
+    <div class="bg-about"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-6 offset-md-0">
+                <div class="about-item ">
+                    <span class="h6 text-color">如何使用本網站?</span>
+                    <h2 class="mt-3 mb-4 position-relative content-title">若要刊登，請先註冊一個帳號</h2>
+                    <div class="about-content">
+                        <h4 class="mb-3 position-relative"></h4>
+                        <p class="mb-5">
+                            1.排行榜功能只有填寫完Profile會算入!</br>
+                            2.排行榜排序依照按讚數排序</br>
+                        
+                        </p>
+                        <a href="#" class="btn btn-main btn-round-full">立即刊登</a>
+                    </br></br></br></br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section About End -->
+<!-- section Counter Start -->
+<section class="section counter">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="counter-item text-center mb-5 mb-lg-0">
+                    <h3 class="mb-0"><span id="users-count" class="counter-stat font-weight-bold">0</span> </h3>
+                    <p class="text-muted">使用者</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="counter-item text-center mb-5 mb-lg-0">
+                    <h3 class="mb-0"><span id="posts-count" class="counter-stat font-weight-bold">0</span>篇</h3>
+                    <p class="text-muted">文章數</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="counter-item text-center mb-5 mb-lg-0">
+                    <h3 class="mb-0"><span id="visits-count" class="counter-stat font-weight-bold">0</span></h3>
+                    <p class="text-muted">文章造訪</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="counter-item text-center">
+                    <h3 class="mb-0"><span id="students-count" class="counter-stat font-weight-bold">0</span></h3>
+                    <p class="text-muted">學生數量 </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- section Counter End  -->
+<section class="section latest-blog bg-2">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 text-center">
+                <div class="section-title">
+                    <span class="h6 text-color">最新文章</span>
+                    <h2 class="mt-3 content-title text-white">關於最新文章</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center" id="latest-posts-container">
+            <!-- 最新文章將動態加載到這裡 -->
+        </div>
+    </div>
+</section>
+
+<section class="mt-70 position-relative">
+    <div class="container">
+    <div class="cta-block-2 bg-gray p-5 rounded border-1">
+        <div class="row justify-content-center align-items-center ">
+            <div class="col-lg-7">
+                <span class="text-color"></span>
+                <h2 class="mt-2 mb-4 mb-lg-0">建立自己的文章</h2>
+            </div>
+            <div class="col-lg-4">
+                <a href="{% url 'articles' %}" class="btn btn-main btn-round-full float-lg-right ">立即刊登</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</section>
+
+{% endblock content %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	updateLatestPosts();
+	updateCounterData();
+	setInterval(updateCounterData, 60000);
+	setInterval(updateLatestPosts, 60000);
+});
+
+function updateLatestPosts() {
+	fetch('/api/post/latest/')
+	.then(response => response.json())
+	.then(data => {
+		const container = document.getElementById('latest-posts-container');
+		data.forEach(post => {
+			const postElement = document.createElement('div');
+			postElement.classList.add('col-lg-4', 'col-md-6', 'mb-5');
+			postElement.innerHTML = `
+				<div class="card bg-transparent border-0">
+					<div class="card-body mt-2">
+						<div class="blog-item-meta">
+							<a href="/" class="text-white-50">首頁<span class="ml-2 mr-2">/</span></a>
+							<a href="/articles_list/" class="text-white-50">所有文章<span class="ml-2">/</span></a>
+							<a href="/articles_list/${post.slug}" class="text-white-50 ml-2"><i class="fa fa-user mr-2"></i>${post.title}</a>
+						</div>
+						<h3 class="mt-3 mb-5 lh-36"><a href="#" class="text-white ">${post.title}</a></h3>
+						<a href="/articles_list/${post.slug}" class="btn btn-small btn-solid-border btn-round-full text-white">查看更多</a>
+					</div>
+				</div>
+			`;
+			container.appendChild(postElement);
+		});
+	});
+}
+
+	
+
+function updateCounterData() {
+	fetch('/api/post/counter-data/')
+		.then(response => response.json())
+		.then(data => {
+			document.getElementById('users-count').textContent = data.users_count;
+			document.getElementById('posts-count').textContent = data.posts_count;
+			document.getElementById('visits-count').textContent = data.visits_count;
+			document.getElementById('students-count').textContent = data.students_count;
+			$('.counter-stat').counterUp({
+				delay: 10,
+				time: 1000
+			});
+		});
+}
+</script>
+{% endblock script %}

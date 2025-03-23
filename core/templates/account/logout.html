@@ -1,0 +1,15 @@
+{% extends "account/logout.html" %}
+{% load i18n %}
+{% load allauth_ui %}
+{% block content %}
+    {% trans "登出" as heading %}
+    {% trans "確定要登出嗎?" as subheading %}
+    {% url 'account_logout' as action_url %}
+    {% #container heading=heading subheading=subheading %}
+    {% trans "繼續" as button_text %}
+    {% #form url=action_url button_text=heading %}
+    {% csrf_token %}
+    {{ redirect_field }}
+    {% /form %}
+    {% /container %}
+{% endblock content %}

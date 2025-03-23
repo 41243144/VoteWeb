@@ -1,0 +1,101 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}所有文章{% endblock title %}
+{% block content %}
+
+<style>
+    .pagination .page-numbers {
+        padding: 8px 16px;
+        margin: 0 4px;
+        border: 1px solid #ddd;
+        color: #007bff;
+        text-decoration: none;
+    }
+    .pagination .page-numbers.current {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+    }
+    .pagination .page-numbers:hover {
+        background-color: #0056b3;
+        color: #fff;
+        border-color: #0056b3;
+    }
+</style>
+
+<div class="main-wrapper ">
+<section class="page-title bg-1">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white">所有文章</span>
+          <h1 class="text-capitalize mb-4 text-lg">文章列表</h1>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="{% url 'index' %}" class="text-white">首頁</a></li>
+            <li class="list-inline-item"><span class="text-white">/</span></li>
+            <li class="list-inline-item"><a href="{% url 'articles_list' %}" class="text-white-50">所有文章</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section blog-wrap bg-gray">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="search-input" placeholder="搜尋">
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-control" id="sort-select">
+                            <option value="-created_at">時間 &darr;</option>
+                            <option value="created_at">時間 &uarr;</option>
+                            <option value="-views">瀏覽次數 &darr;</option>
+                            <option value="views">瀏覽次數 &uarr;</option>
+                            <option value="-likes">喜歡數 &darr;</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row" id="articles-list">
+                    <!-- 文章列表將在這裡動態生成 -->
+                </div>
+                <div class="row mt-5">
+                    <div class="col-lg-12">
+                        <nav class="navigation pagination py-2 d-inline-block">
+                            <div class="nav-links" id="pagination-links">
+                                <!-- 分頁鏈接將在這裡動態生成 -->
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="sidebar-wrap">
+                    <div class="sidebar-widget latest-post card border-0 p-4 mb-3">
+                        <h5>最新文章</h5>
+                        <div id="latest-posts">
+                            <!-- 最新文章將在這裡動態生成 -->
+                        </div>
+                    </div>
+
+                    <div class="sidebar-widget bg-white rounded tags p-4 mb-3">
+                        <h5 class="mb-4">標籤</h5>
+                        <div id="tags-list">
+                            <!-- 標籤列表將在這裡動態生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>   
+        </div>
+    </div>
+</section>
+{% endblock content %}+
+
+{% block script %}
+<script src="{% static 'js/articles_list.js' %}" defer></script>
+{% endblock script %}

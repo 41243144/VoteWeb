@@ -1,0 +1,87 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}排行榜{% endblock title %}
+{% block content %}
+
+<div class="main-wrapper ">
+<section class="page-title bg-1">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white"></span>
+          <h1 class="text-capitalize mb-4 text-lg">排行榜</h1>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="{% url 'index' %}" class="text-white">首頁</a></li>
+            <li class="list-inline-item"><span class="text-white">/</span></li>
+            <li class="list-inline-item"><a href="{% url 'leaderboard' %}" class="text-white-50">排行榜</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="leaderboard">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">排行榜</h4>
+            </div>
+            <div class="card-body">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">學號</th>
+                    <th scope="col">文章標題</th>
+                    <th scope="col">按讚數</th>
+                    <th scope="col">瀏覽量</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-list">
+                  <!-- 排行榜資料將會插入到這裡 -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('/api/post/leaderboard/')
+        .then(response => response.json())
+        .then(data => {
+          const leaderboardList = document.getElementById('leaderboard-list');
+          data.forEach((item, index) => {
+            const row = document.createElement('tr');
+            let rowClass = '';
+            if (index === 0) {
+              rowClass = 'table-warning'; // 金色
+            } else if (index === 1) {
+              rowClass = 'table-secondary'; // 銀色
+            } else if (index === 2) {
+              rowClass = 'table-danger'; // 銅色
+            }
+            row.className = rowClass;
+            row.innerHTML = `
+              <th scope="row">${index + 1}</th>
+              <td>${item.profile.studient_id || item.profile.username}</td>
+              <td>${item.title}</td>
+              <td>${item.likes_count || 0} 讚</td>
+              <td>${item.views || 0} 觀看</td>
+            `;
+            leaderboardList.appendChild(row);
+          });
+        })
+        .catch(error => console.error('Error fetching leaderboard data:', error));
+    });
+  </script>
+
+{% endblock content %}

@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block title %}我的文章{% endblock title %}
+{% block content %}
+
+<div class="main-wrapper ">
+<section class="page-title bg-1">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="block text-center">
+          <span class="text-white">文章</span>
+          <h1 class="text-capitalize mb-4 text-lg">我的文章</h1>
+          <ul class="list-inline">
+            <li class="list-inline-item"><a href="{% url 'index' %}" class="text-white">首頁</a></li>
+            <li class="list-inline-item"><span class="text-white">/</span></li>
+            <li class="list-inline-item"><a href="" class="text-white-50">我的文章</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section blog-wrap bg-gray">
+    <div class="container">
+        <div class="row" id="articles-container">
+            <!-- 動態生成 -->
+        </div>
+
+        <div class="row justify-content-center mt-5">
+            <div class="col-lg-6 text-center">
+                <nav class="navigation pagination d-inline-block">
+                    <div class="nav-links" id="pagination-container">
+                        <!-- 動態生成 -->
+                    </div>
+                </nav>
+                <div id="current-page" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'js/article_manager.js' %}" defer></script>
+{% endblock script %}
