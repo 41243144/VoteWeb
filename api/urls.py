@@ -9,6 +9,8 @@ from .views import (
     CommentView
 )
 
+# Create a router and register our viewset with it.
+# The API URLs are now determined automatically by the router.
 router = DefaultRouter()
 router.register(r'profile', ProfileView, basename='profile')
 router.register(r'post', PostView, basename='post')

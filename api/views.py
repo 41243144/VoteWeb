@@ -22,6 +22,22 @@ class ProfileView(viewsets.ModelViewSet):
     2. serializer_class: 使用的序列化器為ProfileSerializer
     3. permission_classes: 使用的權限類別為登入者才能存取
 
+    function:
+        1. create:
+            method: POST
+            url: api/profile/create/
+            func: 創建使用者的個人資料
+
+        2. update:
+            method: PUT
+            url: api/profile/update/
+            func: 更新使用者的個人資料
+
+        3. list:
+            method: GET
+            url: api/profile/
+            func: 取得使用者的個人資料
+
     '''
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
@@ -73,27 +89,67 @@ class PostView(viewsets.ModelViewSet):
     3. permission_classes: 使用的權限類別為登入者才能存取
 
     function:
-        1. create_post:
+        1. counter_data:
+            method: GET
+            url: api/post/counter-data/
+            func: 取得計數器數據
+
+        2. get_all_posts:
+            method: GET
+            url: api/post/all_posts/
+            func: 取得所有文章
+
+        3. get_post_by_slug:
+            method: GET
+            url: api/post/article/<slug>/
+            func: 取得文章的詳細資訊
+
+        4. get_latest_posts:
+            method: GET
+            url: api/post/latest/
+            func: 取得最新文章
+
+        5. get_posts_by_tag:
+            method: GET
+            url: api/post/by-tag/<tag_name>/
+            func: 取得標籤名稱為<tag_name>的所有文章
+
+        6. get_post_details:
+            method: GET
+            url: api/post/details/
+            func: 取得文章的詳細資訊
+
+        7. get_post_detail:
+            method: GET
+            url: api/post/<pk>/detail/
+            func: 取得文章的詳細資訊
+
+        8. get_leaderboard:
+            method: GET
+            url: api/post/leaderboard/
+            func: 取得文章的排行榜
+
+        9. export_leaderboard:
+            method: GET
+            url: api/post/export-leaderboard/
+            func: 匯出文章排行榜為 CSV
+
+        10. like_post:
+            method: POST
+            url: api/post/<pk>/like_post/
+            func: 按讚文章
+
+        11. create_post:
             method: POST
             url: api/post/create_post/
             func: 創建使用者的文章
 
-        2. get_posts_by_tag:
-            method: GET
-            url: api/post/by-tag/<tag_name>/
-            func: 取得標籤名稱為<tag_name
-
-        3. get_post_details:
-            method: GET
-            url: api/post/<pk>/details/
-            func: 取得文章的詳細資訊
-
-        4. update_post:
+        12. update_post:
             method: PUT
             url: api/post/<pk>/update/
             func: 更新文章
 
-        5. delete_post:
+        13. delete_post:
             method: DELETE
             url: api/post/<pk>/delete/
             func: 刪除文章
@@ -153,6 +209,7 @@ class PostView(viewsets.ModelViewSet):
             for post_data, post in zip(response_data, result_page):
                 post_data['likes'] = post.likes.count()
                 post_data['comments'] = post.comments.count()
+                post_data['category'] = CategorySerializer(post.category).data
 
             response = paginator.get_paginated_response(response_data)
             response.data['total_posts'] = posts.count()
@@ -165,7 +222,7 @@ class PostView(viewsets.ModelViewSet):
         for post_data, post in zip(response_data, posts):
             post_data['likes'] = post.likes.count()
             post_data['comments'] = post.comments.count()
-
+            post_data['category'] = CategorySerializer(post.category).data
         return Response(response_data)
     
     @action(detail=False, methods=['get'], url_path='article/(?P<slug>[^/.]+)', permission_classes=[])
@@ -175,8 +232,6 @@ class PostView(viewsets.ModelViewSet):
         '''
         try:
             post = Post.objects.get(slug=slug)
-            post.views += 1
-            post.save()
             
             serializer = self.get_serializer(post)
             post_data = serializer.data
@@ -220,7 +275,6 @@ class PostView(viewsets.ModelViewSet):
                 }
                 post_data['comments'].append(comment_data)
     
-            print(post_data)
             return Response(post_data)
         except Post.DoesNotExist:
             return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -230,6 +284,9 @@ class PostView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], url_path='latest', permission_classes=[])
     def get_latest_posts(self, request):
+        '''
+            取得最新文章
+        '''
         posts = Post.objects.all().order_by('-created_at')[:4]
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
@@ -303,7 +360,19 @@ class PostView(viewsets.ModelViewSet):
         '''
             取得文章的排行榜
         '''
-        subquery = Post.objects.filter(author_id=OuterRef('author_id')).annotate(max_likes=Max('likes')).order_by('-max_likes').values('id')[:1]
+        category = request.query_params.get('category', None)
+
+        if category:
+            subquery = Post.objects.filter(
+                author_id=OuterRef('author_id'),
+                category_id=category
+            ).annotate(max_likes=Max('likes')).order_by('-max_likes').values('id')[:1]
+        else:
+            subquery = Post.objects.filter(
+                author_id=OuterRef('author_id'),
+            ).annotate(max_likes=Max('likes')).order_by('-max_likes').values('id')[:1]
+
+
         posts = Post.objects.filter(
             id__in=Subquery(subquery),
             author__profile__isnull=False,
@@ -321,6 +390,7 @@ class PostView(viewsets.ModelViewSet):
                 'studient_id': post.author.profile.studient_id,
             }
             post_data['likes_count'] = post.likes_count
+            post_data['category'] = CategorySerializer(post.category).data
 
         return Response(response_data)
     
@@ -329,7 +399,10 @@ class PostView(viewsets.ModelViewSet):
         '''
             匯出文章排行榜為 CSV
         '''
-        subquery = Post.objects.filter(author_id=OuterRef('author_id')).annotate(max_likes=Max('likes')).order_by('-max_likes').values('id')[:1]
+        subquery = Post.objects.filter(
+            author_id=OuterRef('author_id'),
+            category_id=OuterRef('category_id')
+        ).annotate(max_likes=Max('likes')).order_by('-max_likes').values('id')[:1]
         posts = Post.objects.filter(
             id__in=Subquery(subquery),
             author__profile__isnull=False,
@@ -341,6 +414,7 @@ class PostView(viewsets.ModelViewSet):
             data.append({
                 '排名': rank,
                 '學號': post.author.profile.studient_id,
+                '類別': post.category.name,
                 '按讚數': post.likes_count,
                 '瀏覽量': post.views,
                 'PO文日期': post.created_at.strftime('%Y-%m-%d %H:%M:%S'),  # 格式化日期
@@ -362,7 +436,7 @@ class PostView(viewsets.ModelViewSet):
         user = request.user
 
         if not user.is_authenticated:
-            return Response({'detail': 'Authentication credentials were not provided.', 'likes_count': post.liked_by.count()}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'detail': '尚未登入，請先登入之後再操作', 'likes_count': post.liked_by.count()}, status=status.HTTP_403_FORBIDDEN)
 
         post_like, created = PostLike.objects.get_or_create(user=user, post=post)
         
@@ -395,6 +469,9 @@ class PostView(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['put'], url_path='update', permission_classes=[IsAuthenticated])
     def update_post(self, request, pk=None):
+        '''
+            更新文章
+        '''
         try:
             post = self.get_object()
             serializer = self.get_serializer(post, data=request.data, partial=True)
@@ -419,6 +496,9 @@ class PostView(viewsets.ModelViewSet):
     
     
 class PostPagination(PageNumberPagination):
+    '''
+        文章分頁
+    '''
     page_size = 4
     
 class CategoryView(viewsets.ModelViewSet):
@@ -431,7 +511,7 @@ class CategoryView(viewsets.ModelViewSet):
         1. create:
             method: POST
             url: api/category/create/
-            func: 創建分類
+            func: 創建文章分類
             
     '''
     queryset = Category.objects.all().order_by('id')
@@ -455,6 +535,19 @@ class TagView(viewsets.ModelViewSet):
     permission_classes = []
 
 class CommentView(viewsets.ModelViewSet):
+    '''
+    1. queryset: 資料庫查詢的資料集
+    2. serializer_class: 使用的序列化器為CommentSerializer
+    3. permission_classes: 使用的權限類別為登入者才能存取
+
+    function:
+        1. create:
+            method: POST
+            url: api/comment/create/
+            func: 創建留言
+        
+
+    '''
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]

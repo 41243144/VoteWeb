@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from api.models.Post import Post
 
 #------------------------------------------------------------
 # Accounts
@@ -34,9 +35,11 @@ def articles_list(request):
 #------------------------------------------------------------
 # 文章內容
 def article(request, slug):
+    post = Post.objects.get(slug=slug)
+    post.views += 1
+    post.save()
     context = {
         'slug': slug,
-
     }
     return render(request, 'home/article_content.html', context)
 

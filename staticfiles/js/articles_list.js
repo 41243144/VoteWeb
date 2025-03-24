@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 articlesList.innerHTML = '';
+                console.log(data);
                 data.results.forEach(post => {
+                    
                     const postElement = document.createElement('div');
                     postElement.className = 'col-lg-6 col-md-6 mb-5';
                     postElement.innerHTML = `
@@ -78,6 +80,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     paginationLinks.appendChild(nextLink);
                 }
+            })
+            .catch(error => {
+                console.error('Error fetching articles:', error);
             });
     }
 

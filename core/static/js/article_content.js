@@ -108,27 +108,39 @@
         document.querySelector('.single-blog-item').innerHTML = articleContent;
     }
 
-    function setupLikeButton(data) {
-        const likeButton = document.getElementById('like-button');
-        likeButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            fetch(`/api/post/${data.id}/like_post/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({})
-            })
-            .then(response => response.json())
-            .then(result => {
-                document.querySelector('#like-content').textContent = result.liked ? ` ${result.likes_count}` : ` ${result.likes_count}`;
-                likeButton.classList.toggle('liked', result.liked);
-				document.querySelector('.ti-thumb-up').style.color = result.liked ? '#0000E3' : '	#D0D0D0	';
-            })
-            .catch(error => console.error('Error liking post:', error));
-        });
-    }
+	function setupLikeButton(data) {
+		const likeButton = document.getElementById('like-button');
+		likeButton.addEventListener('click', function(event) {
+			event.preventDefault();
+			fetch(`/api/post/${data.id}/like_post/`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCookie('csrftoken')
+				},
+				body: JSON.stringify({})
+			})
+			.then(response => {
+				if (response.status === 403) {
+					Swal.fire({
+						icon: 'error',
+						title: '尚未登入',
+						text: '請先登入後再操作!',
+						showConfirmButton: false,
+						timer: 1000
+					});
+					throw new Error('尚未登入');
+				}
+				return response.json();
+			})
+			.then(result => {
+				document.querySelector('#like-content').textContent = result.liked ? ` ${result.likes_count}` : ` ${result.likes_count}`;
+				likeButton.classList.toggle('liked', result.liked);
+				document.querySelector('.ti-thumb-up').style.color = result.liked ? '#0000E3' : '#D0D0D0';
+			})
+			.catch(error => console.error('Error liking post:', error));
+		});
+	}
 
 	function addNextAndPrevArticle(data){
 		const content = `

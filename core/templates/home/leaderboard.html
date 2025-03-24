@@ -30,6 +30,10 @@
           <div class="card">
             <div class="card-header">
               <h4 class="card-title">排行榜</h4>
+              <select id="category-select" class="form-select">
+                <option value="">所有類別</option>
+                <!-- 類別選項將會插入到這裡 -->
+              </select>
             </div>
             <div class="card-body">
               <table class="table table-striped">
@@ -38,6 +42,7 @@
                     <th scope="col">#</th>
                     <th scope="col">學號</th>
                     <th scope="col">文章標題</th>
+                    <th scope="col">類別</th>
                     <th scope="col">按讚數</th>
                     <th scope="col">瀏覽量</th>
                   </tr>
@@ -52,36 +57,8 @@
       </div>
     </div>
   </section>
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      fetch('/api/post/leaderboard/')
-        .then(response => response.json())
-        .then(data => {
-          const leaderboardList = document.getElementById('leaderboard-list');
-          data.forEach((item, index) => {
-            const row = document.createElement('tr');
-            let rowClass = '';
-            if (index === 0) {
-              rowClass = 'table-warning'; // 金色
-            } else if (index === 1) {
-              rowClass = 'table-secondary'; // 銀色
-            } else if (index === 2) {
-              rowClass = 'table-danger'; // 銅色
-            }
-            row.className = rowClass;
-            row.innerHTML = `
-              <th scope="row">${index + 1}</th>
-              <td>${item.profile.studient_id || item.profile.username}</td>
-              <td>${item.title}</td>
-              <td>${item.likes_count || 0} 讚</td>
-              <td>${item.views || 0} 觀看</td>
-            `;
-            leaderboardList.appendChild(row);
-          });
-        })
-        .catch(error => console.error('Error fetching leaderboard data:', error));
-    });
-  </script>
-
 {% endblock content %}
+
+{% block script %}
+  <script src="{% static 'js/leaderboard.js' %}" defer></script>
+{% endblock script %}

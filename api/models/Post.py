@@ -9,6 +9,22 @@ from .Tag import Tag
 import uuid
 
 class Post(models.Model):
+    '''
+        id:             UUIDField       欄位，主鍵
+        author:         ForeignKey      欄位，關聯 User
+        studient_id:    CharField       欄位，學號
+        category:       ForeignKey      欄位，關聯 Category
+        tags:           ManyToManyField 欄位，關聯 Tag
+        title:          CharField 欄位，標題
+        content:        TextField 欄位，內容
+        link:           URLField 欄位，連結
+        views:          PositiveIntegerField 欄位，瀏覽次數
+        liked_by:       ManyToManyField 欄位，關聯 User
+        created_at:     DateTimeField 欄位，建立時間
+        updated_at:     DateTimeField 欄位，更新時間
+        slug:           AutoSlugField 欄位，Slug
+
+    '''
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, verbose_name='ID')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', verbose_name='作者')
     studient_id = models.CharField(max_length=10, null=True, blank=True, verbose_name='學號')

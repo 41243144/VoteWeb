@@ -21,6 +21,15 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class PostSerializer(serializers.ModelSerializer):
+    '''
+    tags: 這是一個 write_only 的欄位，用來接收一個 list of string
+    category: 這是一個 read_only 的欄位，用來顯示 category 的名稱
+    studient_id: 這是一個 read_only 的欄位，用來顯示 profile 的 studient_id
+
+    create: 這個方法會在建立一個新的 post 時被呼叫
+    update: 這個方法會在更新一個 post 時被呼叫
+
+    '''
     tags = serializers.ListField(
         child=serializers.CharField(),
         write_only=True,
@@ -64,6 +73,14 @@ class PostSerializer(serializers.ModelSerializer):
         return instance
 
 class CommentSerializer(serializers.ModelSerializer):
+    '''
+    post: 這是一個 read_only 的欄位，用來顯示 post 的 title
+    profile: 這是一個 read_only 的欄位，用來顯示 profile 的 studient_id
+    content: 這是一個 write_only 的欄位，用來接收 comment 的內容
+    created_at: 這是一個 read_only 的欄位，用來顯示 comment 的建立時間
+    updated_at: 這是一個 read_only 的欄位，用來顯示 comment 的更新時間
+    
+    '''
     class Meta:
         model = Comment
         fields = ['id', 'content', 'created_at', 'updated_at']
