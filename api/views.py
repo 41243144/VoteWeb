@@ -516,7 +516,7 @@ class CategoryView(viewsets.ModelViewSet):
     '''
     queryset = Category.objects.all().order_by('id')
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
