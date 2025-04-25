@@ -562,6 +562,8 @@ class CommentView(viewsets.ModelViewSet):
             data = request.data.copy()
             data['profile'] = profile.id
 
+            print(data)
+
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save(post=post, profile=profile)

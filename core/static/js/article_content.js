@@ -22,7 +22,6 @@
 
         const comment = document.getElementById('comment').value;
 		const post = document.getElementById('comment-form').dataset.post;
-
         fetch('/api/comment/', {
             method: 'POST',
             headers: {
