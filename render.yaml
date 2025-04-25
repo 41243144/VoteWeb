@@ -3,7 +3,7 @@ services:
     name: voteweb
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn voteweb.wsgi"
+    startCommand: "python manage.py makemigrations && python manage.py migrate && python manage.py shell < core/scripts/create_superuser.py &&gunicorn VoteWeb.wsgi"
     plan: free
     region: oregon
     envVars:
